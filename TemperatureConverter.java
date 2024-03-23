@@ -29,19 +29,25 @@ public class TemperatureConverter extends JFrame {
         fahrenheitField = new JTextField();
         fahrenheitField.setEditable(false);
 
+        //create a JButton
         JButton convertButton = new JButton("Convert");
+        //When the button is clicked, the actionPerformed runs
         convertButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                //converts the temperature from Celsius to Fahrenheit when the convertButton is clicked.
                 try {
+                    //into a double, performs the conversion, and sets the result in the fahrenheitField
                     double celsius = Double.parseDouble(celsiusField.getText());
                     double fahrenheit = (celsius * 9/5) + 32;
                     fahrenheitField.setText(Double.toString(fahrenheit));
+
+                    //If the input is not a valid number, it sets the fahrenheitField to display "Invalid Input".
                 } catch (NumberFormatException ex) {
                     fahrenheitField.setText("Invalid Input");
                 }
             }
         });
-
+            //When the button is clicked, it clears the text in both the celsiusField and fahrenheitField.
         JButton clearButton = new JButton("Clear");
         clearButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -49,7 +55,7 @@ public class TemperatureConverter extends JFrame {
                 fahrenheitField.setText("");
             }
         });
-
+        //adds all the GUI components to the JFrame in it's specified order.
         add(celsiusLabel);
         add(celsiusField);
         add(fahrenheitLabel);
@@ -57,10 +63,12 @@ public class TemperatureConverter extends JFrame {
         add(convertButton);
         add(clearButton);
 
+        //pack all the components into the frame and center the frame on the screen.
         pack();
         setLocationRelativeTo(null);
     }
 
+    //creates an instance of the TemperatureConverter class and sets it to be visible
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
