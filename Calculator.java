@@ -36,12 +36,15 @@ public class Calculator extends JFrame {
         JLabel num2Label = new JLabel("Number 2:");
         num2Field = new JTextField();
         JLabel operatorLabel = new JLabel("Operator:");
+        // creates a JPanel to contain the radio buttons and sets its layout manager to a flow layout.
         JPanel operatorPanel = new JPanel();
         operatorPanel.setLayout(new FlowLayout());
+        //create JRadioButtons with labels representing mathematical operations.
         addRadio = new JRadioButton("+");
         subtractRadio = new JRadioButton("-");
         multiplyRadio = new JRadioButton("*");
         divideRadio = new JRadioButton("/");
+        //create a ButtonGroup and add the radio buttons to it, ensuring that only one radio button can be selected at a time.
         ButtonGroup operatorGroup = new ButtonGroup();
         operatorGroup.add(addRadio);
         operatorGroup.add(subtractRadio);
@@ -51,13 +54,18 @@ public class Calculator extends JFrame {
         operatorPanel.add(subtractRadio);
         operatorPanel.add(multiplyRadio);
         operatorPanel.add(divideRadio);
+        //Creates label for results and the input where it will be displayed
         JLabel resultLabel = new JLabel("Result:");
         resultField = new JTextField();
+        //sets result to unEditable
         resultField.setEditable(false);
 
+        
         JButton calculateButton = new JButton("Calculate");
         calculateButton.addActionListener(new ActionListener() {
+            ////When the button is clicked, the actionPerformed method is run.
             public void actionPerformed(ActionEvent e) {
+                //performs the mathematical operation based on the selected radio button and displays the result in the resultField
                 try {
                     int num1 = Integer.parseInt(num1Field.getText());
                     int num2 = Integer.parseInt(num2Field.getText());
@@ -72,14 +80,17 @@ public class Calculator extends JFrame {
                         result = num1 / num2;
                     }
                     resultField.setText(Integer.toString(result));
+                    //t handles exceptions for invalid input
                 } catch (NumberFormatException ex) {
                     resultField.setText("Invalid Input");
+                    //or division by zero.
                 } catch (ArithmeticException ex) {
                     resultField.setText("Cannot divide by zero");
                 }
             }
         });
 
+        //add all the GUI components to the JFrame in their specified order
         add(num1Label);
         add(num1Field);
         add(num2Label);
@@ -91,6 +102,7 @@ public class Calculator extends JFrame {
         add(new JLabel());
         add(calculateButton);
 
+        //center the frame on the screen
         pack();
         setLocationRelativeTo(null);
     }
