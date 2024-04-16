@@ -8,8 +8,8 @@ public class calc extends JFrame implements ActionListener {
     private JButton[] operationButtons;
     private JButton equalsButton, clearButton, negateButton, decimalButton;
 
-    private double num1, num2, result;
-    private String input, operator;
+    private String input;
+    private double result;
 
     public calc() {
         this.setTitle("Calculator");
@@ -62,10 +62,7 @@ public class calc extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
         
-        if (Character.isDigit(command.charAt(0))) {
-            input += command;
-            textField.setText(input);
-        } else if (command.equals(".") && !input.contains(".")) {
+        if (Character.isDigit(command.charAt(0)) || command.equals(".")) {
             input += command;
             textField.setText(input);
         } else if (command.equals("C")) {
@@ -79,34 +76,83 @@ public class calc extends JFrame implements ActionListener {
                 textField.setText(input);
             }
         } else if (command.equals("=")) {
-            num2 = Double.parseDouble(input);
-            switch (operator) {
-                case "+":
-                    result = num1 + num2;
-                    break;
-                case "-":
-                    result = num1 - num2;
-                    break;
-                case "*":
-                    result = num1 * num2;
-                    break;
-                case "/":
-                    result = num1 / num2;
-                    break;
+            if (!input.isEmpty()) {
+                result = evaluateExpression(input);
+                textField.setText(input + " = " + result);
+                input = String.valueOf(result);
             }
-            textField.setText(String.valueOf(result));
-            input = "";
         } else {
             if (!input.isEmpty()) {
-                num1 = Double.parseDouble(input);
-                operator = command;
-                input = "";
+                input += " " + command + " ";
+                textField.setText(input);
             }
         }
+    }
+
+    private double evaluateExpression(String expression) {
+        return new Object() {
+            int pos = -1, ch;
+
+            void nextChar() {
+                ch = (++pos < expression.length()) ? expression.charAt(pos) : -1;
+            }
+
+            boolean eat(int charToEat) {
+                while (ch == ' ') nextChar();
+                if (ch == charToEat) {
+                    nextChar();
+                    return true;
+                }
+                return false;
+            }
+
+            double parse() {
+                nextChar();
+                double x = parseExpression();
+                if (pos < expression.length()) throw new RuntimeException("Unexpected: " + (char)ch);
+                return x;
+            }
+
+            double parseExpression() {
+                double x = parseTerm();
+                for (;;) {
+                    if      (eat('+')) x += parseTerm(); // addition
+                    else if (eat('-')) x -= parseTerm(); // subtraction
+                    else return x;
+                }
+            }
+
+            double parseTerm() {
+                double x = parseFactor();
+                for (;;) {
+                    if      (eat('*')) x *= parseFactor(); // multiplication
+                    else if (eat('/')) x /= parseFactor(); // division
+                    else return x;
+                }
+            }
+
+            double parseFactor() {
+                if (eat('+')) return parseFactor(); // unary plus
+                if (eat('-')) return -parseFactor(); // unary minus
+
+                double x;
+                int startPos = this.pos;
+                if (eat('(')) { // parentheses
+                    x = parseExpression();
+                    eat(')');
+                } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
+                    while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
+                    x = Double.parseDouble(expression.substring(startPos, this.pos));
+                } else {
+                    throw new RuntimeException("Unexpected: " + (char)ch);
+                }
+
+                return x;
+            }
+        }.parse();
     }
 
     public static void main(String[] args) {
         new calc();
     }
 }
-
